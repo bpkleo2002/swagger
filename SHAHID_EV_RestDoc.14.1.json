@@ -4,12 +4,12 @@ servers:
     description: Dev API server
 info:
   description: |-
-    <b>Last Updated Date 28th April 2021 </b><br> <br><h1><b>Evergent-Shahid consolidated API document</h1> </b>
+    <b>Last Updated Date 30th April 2021 </b><br> <br><h1><b>Evergent-Shahid consolidated API document</h1> </b>
 
      <br><br>
      <b>Note:</b> "<b>x-</b>" symbol should be ignored infront of Error Codes.  
   version: ''
-  title: EV Shahid API - V14.1
+  title: EV Shahid API - V14.2
   contact:
     email: pavankumar.a@evergent.com
   license:
@@ -1262,6 +1262,59 @@ paths:
           description: SessionID is mandatory
         x- eV4704:
           description: Payment not found
+        x- eV2365:
+          description: The Receipt is already used by other customer
+        x- eV2378:
+          description: The Receipt is already used
+        x- eV2402:
+          description: Subscription is already expired with the given product id
+        x- eV2242:
+          description: The App Store could not read the JSON object you provided
+        x- eV2243:
+          description: The data in the receipt-data property was malformed or missing
+        x- eV2244:
+          description: The receipt could not be authenticated
+        x- eV2245:
+          description: >-
+            The shared secret you provided does not match the shared secret on
+            file for your account
+        x- eV2246:
+          description: The receipt server is not currently available
+        x- eV2247:
+          description: >-
+            This receipt is valid but the subscription has expired. When this
+            status code is returned to your server, the receipt data is also
+            decoded and returned as part of the response
+        x- eV2248:
+          description: >-
+            This receipt is from the test environment, but it was sent to the
+            production environment for verification. Send it to the test
+            environment instead
+        x- eV2249:
+          description: >-
+            This receipt is from the production environment, but it was sent to
+            the test environment for verification. Send it to the production
+            environment instead
+        x- eV2292:
+          description: Google Wallet receipt expired
+        x- eV2293:
+          description: Google wallet receipt validation failed
+        x- eV2591:
+          description: >-
+            The transaction represented by this Purchase Token is no longer
+            valid
+        x- eV2592:
+          description: Invalid sharedSecret
+        x- eV2594:
+          description: Invalid Purchase Token
+        x- eV2595:
+          description: >-
+            The Purchase Token was created with credentials that have
+            expired.Use renew to generate a valid purchase token
+        x- eV2596:
+          description: There was an Internal Server Error
+        x- eV2374:
+          description: No Service exists with the given AppServiceID
       requestBody:
         content:
           application/json:
@@ -1285,6 +1338,630 @@ paths:
                       makeAutoPayment: 'true'
                       CardTokenInfoMessage:
                         sessionID: sid_eiemohhwfkce3pwfq3guevjqsi
+              App Store Billing purchase:
+                value:
+                  AddSubscriptionRequestMessage:
+                    apiKey: 8uMMWK58TY2fGjJS
+                    rateType: App Store Billing
+                    appServiceID: com.shahid.staging.subscription
+                    serviceType: PRODUCT
+                    quantity: '1'
+                    paymentmethodInfo:
+                      label: App Store Billing
+                      transactionReferenceMsg:
+                        txID: <Valid Receipt>
+                        txMsg: Success
+              Google Wallet purchase:
+                value:
+                  AddSubscriptionRequestMessage:
+                    apiKey: 8uMMWK58TY2fGjJS
+                    rateType: Google Wallet
+                    priceCharged: '69.99'
+                    appServiceID: com.shahid.staging.subscription
+                    serviceType: PRODUCT
+                    quantity: '1'
+                    paymentmethodInfo:
+                      label: Google Wallet
+                      transactionReferenceMsg:
+                        txID: <Valid Receipt>
+                        txMsg: Success
+  /activateCustomerV3:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - TPay
+      operationId: ActivateCustomerV3RequestMessage
+      description: >-
+        activateCustomerV3() REST API is used to place the Tpay order to the user.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                properties:
+                  ActivateCustomerV3RespMessage:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        description: Success/Fail.
+                      responseCode:
+                        type: string
+                        description: >-
+                          Indicates if the response was successfully processed.
+                          Accepted values are <br> “1” – Success <br> “0” –
+                          Failure.
+              examples:
+                '111111111':
+                  value:
+                    ActivateCustomerV3RespMessage:
+                      failureMessage:
+                        - errorMessage: Authentication Failed
+                          errorCode: '111111111'
+                      responseCode: '0'
+                Successful response:
+                  value:
+                    ActivateCustomerV3RespMessage:
+                      message: SUCCESS
+                      responseCode: '1'
+                'eV2364':
+                  value:
+                    ActivateCustomerV3RespMessage:
+                      failureMessage:
+                        - errorMessage: Sku is required
+                          errorCode: 'eV2364'
+                      responseCode: '0'
+                'eV2355':
+                  value:
+                    ActivateCustomerV3RespMessage:
+                      failureMessage:
+                        - errorMessage: Invalid sku
+                          errorCode: 'eV2355'
+                      responseCode: '0'
+                'eV2138':
+                  value:
+                    ActivateCustomerV3RespMessage:
+                      failureMessage:
+                        - errorMessage: Generic Failure
+                          errorCode: 'eV2138'
+                      responseCode: '0'
+                'eV2334':
+                  value:
+                    ActivateCustomerV3RespMessage:
+                      failureMessage:
+                        - errorMessage: Method is required.
+                          errorCode: 'eV2334'
+                      responseCode: '0'
+        x- 111111111:
+          description: Authentication Failed
+        x- eV2334:
+          description: Method is required.
+        x- eV2138:
+          description: Generic Failure
+        x- eV2355:
+          description: Invalid sku
+        x- eV2364:
+          description: Sku is required
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ActivateCustomerV3RequestMessage:
+                  type: Object
+                  $ref: '#/components/schemas/activateCustomerV3'
+            examples:
+              Sample request:
+                value:
+                  ActivateCustomerV3RequestMessage:
+                    apiKey: 8uMMWK58TY2fGjJS
+                    sku: 'tok_ctynkwcksdru3nzh7fzhszcxzu'
+                    paymentMethod: TPay_Zain
+                    method: activate
+                    country: IQ
+  /serviceEligibilityCheck:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - TPay
+      operationId: ServiceEligibilityCheckRequestMessage
+      description: >-
+        serviceEligibilityCheck() REST API is used to check service eligibility at operator end.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                properties:
+                  ServiceEligibilityCheckResponseMessage:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        description: Success/Fail.
+                      responseCode:
+                        type: string
+                        description: >-
+                          Indicates if the response was successfully processed.
+                          Accepted values are <br> “1” – Success <br> “0” –
+                          Failure.
+                      spAccountID:
+                        type: string
+                        description: Unique id generated in EV system.
+                      mobileNumber:
+                        type: string
+                        description: Contact number of the user.
+                      subscriptionDetails:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/subscriptionDetails'
+                        description: Subscription details.
+              examples:
+                '111111111':
+                  value:
+                    ServiceEligibilityCheckResponseMessage:
+                      failureMessage:
+                        - errorMessage: Authentication Failed
+                          errorCode: '111111111'
+                      responseCode: '0'
+                Successful response:
+                  value:
+                    ServiceEligibilityCheckResponseMessage:
+                      message: SUCCESS
+                      responseCode: '1'
+                      spAccountID: '16180566411121361348348536'
+                      mobileNumber: '7093004212'
+                      subscriptionDetails:
+                        - paymentMethod: TPay_Jain
+                          sku: VIP3M
+                          subscriptionStatus: Active
+                          orderID: '456930951'
+        x- 111111111:
+          description: Authentication Failed
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ServiceEligibilityCheckRequestMessage:
+                  type: Object
+                  $ref: '#/components/schemas/serviceEligibilityCheck'
+            examples:
+              Sample request:
+                value:
+                  ServiceEligibilityCheckRequestMessage:
+                    apiKey: 8uMMWK58TY2fGjJS
+                    channelPartnerID: SHAHID
+                    email: mohammadshafi@yopmail.com
+                    msisdn: '7093004212'
+                    externalAccountID: '24565464564'
+  /isCustomerEligibleForFreeTrial:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Offer Management APIs
+      operationId: IsCustomerEligibleForFreeTrialRequestMessage
+      description: >-
+        isCustomerEligibleForFreeTrial() REST API is used to verify whether the
+        customer is eligible for free trial for the account or not.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                properties:
+                  FreeTrialResponseMessage:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        description: Free Trial Eligibility Status
+                      responseCode:
+                        type: string
+                        description: >-
+                          Indicates if the response was successfully processed.
+                          Accepted values are <br> “1” – Success. <br> “0” –
+                          Failure.
+                      status:
+                        type: string
+                        description: Success/Fail
+              examples:
+                '111111111':
+                  value:
+                    FreeTrialResponseMessage:
+                      responseCode: '0'
+                      failureMessage:
+                        - errorMessage: Authentication Failed
+                          errorCode: '111111111'
+                Sample Successfull Response:
+                  value:
+                    FreeTrialResponseMessage:
+                      message: Free Trial Available
+                      responseCode: '1'
+                      status: SUCCESS
+                eV2155:
+                  value:
+                    FreeTrialResponseMessage:
+                      responseCode: '0'
+                      status: FAIL
+                      failureMessage:
+                        - errorMessage: No free trial Available
+                          errorCode: eV2155
+        x- 111111111:
+          description: Authorization failed
+        x- eV2155:
+          description: No free trial Available
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                FreeTrialRequestMessage:
+                  type: Object
+                  $ref: '#/components/schemas/isCustomerEligibleForFreeTrial'
+            examples:
+              Sample Successfull Request:
+                value:
+                  FreeTrialRequestMessage:
+                    apiKey: 8uMMWK58TY2fGjJS
+  /removeSubscription:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Order Processing
+      operationId: RemoveSubscriptionRequestMessage
+      description: removeSubscription() REST API removes a subscription to the customer.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                properties:
+                  RemoveSubscriptionResponseMessage:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        description: Success/Fail
+                      responseCode:
+                        type: string
+                        description: >-
+                          Indicates if the response was successfully processed.
+                          Accepted values are <br> “1” – Success. <br> “0” –
+                          Failure.
+              examples:
+                '111111111':
+                  value:
+                    RemoveSubscriptionResponseMessage:
+                      failureMessage:
+                        - errorMessage: Authentication Failed
+                          errorCode: '111111111'
+                      responseCode: '0'
+                Sample successful Response:
+                  value:
+                    RemoveSubscriptionResponseMessage:
+                      message: SUCCESS
+                      responseCode: '1'
+                eV2961:
+                  value:
+                    RemoveSubscriptionResponseMessage:
+                      message: FAIL
+                      failureMessage:
+                        - errorMessage: Servicetype  is mandatory
+                          errorCode: eV2961
+                      responseCode: '0'
+                eV1106:
+                  value:
+                    RemoveSubscriptionResponseMessage:
+                      message: FAIL
+                      failureMessage:
+                        - errorMessage: Insufficient parameters. Please provide Services Info
+                          errorCode: eV1106
+                      responseCode: '0'
+        x- 111111111:
+          description: Authentication failed
+        x- eV2961:
+          description: Servicetype  is mandatory
+        x- eV1106:
+          description: Insufficient parameters. Please provide Services Info
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                RemoveSubscriptionRequestMessage:
+                  type: Object
+                  $ref: '#/components/schemas/removeSubscription'
+            examples:
+              Sample Successful request:
+                value:
+                  RemoveSubscriptionRequestMessage:
+                    apiKey: 8uMMWK58TY2fGjJS
+                    serviceID: VIP3M
+                    serviceType: PRODUCT
+                    orderId: '457067951'
+  /recordTransaction:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Fawry
+      operationId: RecordTransactionRequestMessage
+      description: recordTransaction() REST API is used to record the payment for the transaction.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                properties:
+                  RecordTransactionResponseMessage:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        description: Success/Fail
+                      responseCode:
+                        type: string
+                        description: >-
+                          Indicates if the response was successfully processed.
+                          Accepted values are <br> “1” – Success. <br> “0” –
+                          Failure.
+                      transactionId:
+                        type: string
+                        description: Unique ID generated for the payment.
+              examples:
+                '111111111':
+                  value:
+                    RecordTransactionResponseMessage:
+                      failureMessage:
+                        - errorMessage: Authentication Failed
+                          errorCode: '111111111'
+                      responseCode: '0'
+                Sample successful Response:
+                  value:
+                    RecordTransactionResponseMessage:
+                      message: SUCCESS
+                      responseCode: '1'
+                      transactionId: '45664344556553344'
+        x- 111111111:
+          description: Authentication failed
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                RecordTransactionRequestMessage:
+                  type: Object
+                  $ref: '#/components/schemas/recordTransaction'
+            examples:
+              Sample Successful request:
+                value:
+                  RecordTransactionRequestMessage:
+                    apiKey: 8uMMWK58TY2fGjJS
+                    itemCode: VIPM01
+                    expiryDate: '1619724667326'
+                    paymentChannel: Fawry
+                    transactionId: '45664344556553344'
+                    transactionStatus: PENDING
+                    priceCharged: '39'
+  /updateTransaction:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Fawry
+      operationId: UpdateTransactionRequestMessage
+      description: updateTransaction() REST API is used to update existing  pending transaction.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                properties:
+                  UpdateTransactionResponseMessage:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        description: Success/Fail
+                      responseCode:
+                        type: string
+                        description: >-
+                          Indicates if the response was successfully processed.
+                          Accepted values are <br> “1” – Success. <br> “0” –
+                          Failure.
+                      transactionId:
+                        type: string
+                        description: Unique ID generated for the payment.
+                      cpCustomerID:
+                        type: string
+                        description: Unique id generated for the customer in EV system.
+                      email:
+                        type: string
+                        description: Email of the user.
+                      itemCode:
+                        type: string
+                        description: Unique id defined for the product in EV system.
+                      itemIndicator:
+                        type: string
+                        description: Indicator of the product.
+                      priceCharged:
+                        type: string
+                        description: Price charged for the product.
+                      paymentChannel:
+                        type: string
+                        description: Name of the payment channel.
+                      transactionStatus:
+                        type: string
+                        description: Status of the transaction.
+                      referenceNumber:
+                        type: string
+                        description: Unique reference id generated for the account. 
+                      comments:
+                        type: string
+                        description: Comments for the transaction.
+              examples:
+                '111111111':
+                  value:
+                    UpdateTransactionResponseMessage:
+                      failureMessage:
+                        - errorMessage: Authentication Failed
+                          errorCode: '111111111'
+                      responseCode: '0'
+                Sample successful Response:
+                  value:
+                    UpdateTransactionResponseMessage:
+                      responseCode: 1
+                      message: SUCCESS
+                      transactionId: '12333443'
+                      cpCustomerID: '21042914271325985'
+                      email: testfawry3@yopmail.com
+                      itemCode: VIPM01
+                      itemIndicator: SVOD
+                      priceCharged: 39.00,
+                      paymentChannel: Fawry
+                      transactionStatus: COMPLETED
+                      referenceNumber: '3452137'
+                      comments: Successfully Completed
+                'eV2888':
+                  value:
+                    UpdateTransactionResponseMessage:
+                      failureMessage:
+                        - errorMessage: No Pending Transaction found with transaction id XXXX
+                          errorCode: 'eV2888'
+                      responseCode: '0'
+        x- 111111111:
+          description: Authentication failed
+        x- eV2888:
+          description: No Pending Transaction found with transaction id XXXX
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                UpdateTransactionRequestMessage:
+                  type: Object
+                  $ref: '#/components/schemas/updateTransaction'
+            examples:
+              Sample Successful request:
+                value:
+                  UpdateTransactionRequestMessage:
+                    apiKey: 8uMMWK58TY2fGjJS
+                    transactionId: '12333443'
+                    paymentChannel: Fawry
+                    transactionStatus: COMPLETED
+                    mobileNumber: '971502217847'
+                    email: fawrytest1@yopmail.com
+  /getTransactionInfoDetails:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Fawry
+      operationId: GetTransactionInfoDetailsRequestMessage
+      description: getTransactionInfoDetails() REST API is used to get the pending transactions to the account before expiry time.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                properties:
+                  GetTransactionInfoDetailsResponseMessage:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        description: Success/Fail
+                      responseCode:
+                        type: string
+                        description: >-
+                          Indicates if the response was successfully processed.
+                          Accepted values are <br> “1” – Success. <br> “0” –
+                          Failure.
+                      transactionId:
+                        type: string
+                        description: Unique ID generated for the payment.
+                      cpCustomerID:
+                        type: string
+                        description: Unique id generated for the customer in EV system.
+                      email:
+                        type: string
+                        description: Email of the user.
+                      itemCode:
+                        type: string
+                        description: Unique id defined for the product in EV system.
+                      itemIndicator:
+                        type: string
+                        description: Indicator of the product.
+                      priceCharged:
+                        type: string
+                        description: Price charged for the product.
+                      paymentChannel:
+                        type: string
+                        description: Name of the payment channel.
+                      transactionStatus:
+                        type: string
+                        description: Status of the transaction.
+                      referenceNumber:
+                        type: string
+                        description: Unique reference id generated for the account. 
+              examples:
+                '111111111':
+                  value:
+                    GetTransactionInfoDetailsResponseMessage:
+                      failureMessage:
+                        - errorMessage: Authentication Failed
+                          errorCode: '111111111'
+                      responseCode: '0'
+                Sample successful Response:
+                  value:
+                    GetTransactionInfoDetailsResponseMessage:
+                      transactionId: '12333444'
+                      cpCustomerID: '21042812001324336'
+                      email: testfawry3@yopmail.com
+                      itemCode: VIPM01
+                      itemIndicator: SVOD/TVOD
+                      priceCharged: 39.00
+                      paymentChannel: Fawry
+                      transactionStatus: PENDING
+                      referenceNumber: '3451587'
+                      responseCode: '1'
+                      message: SUCCESS
+        x- 111111111:
+          description: Authentication failed
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                GetTransactionInfoDetailsRequestMessage:
+                  type: Object
+                  $ref: '#/components/schemas/getTransactionInfoDetails'
+            examples:
+              Sample Successful request:
+                value:
+                  GetTransactionInfoDetailsRequestMessage:
+                    apiKey: 8uMMWK58TY2fGjJS
+                    transactionId: '12333443'
+                    paymentChannel: Fawry
 components:
   securitySchemes:
     bearerAuth:
@@ -1799,6 +2476,24 @@ components:
           type: object
           $ref: '#/components/schemas/CardTokenInfoMessage'
           description: Information regarding unique payment ID received from Checkout.
+        transactionReferenceMsg:
+          type: object
+          $ref: '#/components/schemas/transactionReferenceMsg'
+          description: Transaction Reference Message details.
+    transactionReferenceMsg:
+      type: object
+      required:
+        - txID
+      properties:
+        amount:
+          type: string
+          description: Transaction amount.
+        txID:
+          type: string
+          description: Unique ID of the transaction.
+        txMsg:
+          type: string
+          description: Transaction Message.
     CardTokenInfoMessage:
       type: object
       required:
@@ -1810,3 +2505,225 @@ components:
     orderedProductIds:
       type: object
       description: Unique id of the ordered product.
+    activateCustomerV3:
+      type: object
+      required:
+        - Authorization
+        - apiKey
+        - sku
+        - paymentMethod
+        - method
+        - country
+      properties:
+        channelPartnerID:
+          type: string
+          description: Unique ID number of channel partner.
+        apiKey:
+          type: string
+          description: Partner authentication Key.
+        Authorization:
+          type: string
+          description: Access token generated to the account.
+        paymentMethod:
+          type: string
+          description: Payment method sent by Shahid.
+          enum:
+            - TPay_Zain
+            - TPay_Orange
+            - TPay_Umniah
+            - TPay_STC
+            - TPay_Du
+            - TPay_Etisalat
+            - TPay_Omantel
+            - TPay_Ooredoo
+            - TPay_Vodafone
+            - TPay_WE
+        method:
+          type: string
+          description: Type of the method.
+          example: activate, switch
+        sku:
+          type: string
+          description: Unique id of the Service defined in EV system.
+        country:
+          type: string
+          description: Country of the user.
+    serviceEligibilityCheck:
+      type: object
+      required:
+        - Authorization
+        - apiKey
+        - msisdn
+      properties:
+        channelPartnerID:
+          type: string
+          description: Unique ID number of channel partner.
+        apiKey:
+          type: string
+          description: Partner authentication Key.
+        Authorization:
+          type: string
+          description: Access token generated to the account.
+        msisdn:
+          type: string
+          description: Unique msisdn of the user.
+        externalAccountID:
+          type: string
+          description: Unique external account id of the user
+        email:
+          type: string
+          description: Email of the user
+    subscriptionDetails:
+      type: object
+      properties:
+        paymentMethod:
+          type: string
+          description: Payment method of the operator.
+        sku:
+          type: string
+          description: Unique product id defined in EV system.
+        subscriptionStatus:
+          type: string
+          description: Subscription status of the user.
+        orderID:
+          type: string
+          description: Unique ID generated for the order.
+    isCustomerEligibleForFreeTrial:
+      type: object
+      required:
+        - apiKey
+        - authorization
+      properties:
+        channelPartnerID:
+          type: string
+          description: Unique identification number of channel partner.
+        apiKey:
+          type: string
+          description: Partner authentication key.
+        Authorization:
+          type: string
+          description: Access token generated to the account.
+    removeSubscription:
+      type: object
+      required:
+        - apiKey
+        - Authorization        
+        - serviceID
+        - serviceType
+      properties:
+        channelPartnerID:
+          type: string
+          description: Unique identification number of channel partner
+        apiKey:
+          type: string
+          description: Partner authentication key.
+        Authorization:
+          type: string
+          description: Access token generated to the account.
+        serviceID:
+          type: string
+          description: SKU/ Quick code of the product in Evergent System.
+        serviceType:
+          type: string
+          description: Product/ Package.
+        orderId:
+          type: string
+          description: Unique id generated for the order.
+    recordTransaction:
+      type: object
+      required:
+        - apiKey
+        - Authorization
+        - itemCode
+        - expiryDate
+        - transactionId
+        - transactionStatus
+        - priceCharged
+      properties:
+        channelPartnerID:
+          type: string
+          description: Unique identification number of channel partner
+        apiKey:
+          type: string
+          description: Partner authentication key.
+        Authorization:
+          type: string
+          description: Access token generated to the account.
+        itemCode:
+          type: string
+          description: SKU/ Quick code of the product in Evergent System.
+        expiryDate:
+          type: string
+          description: Expiry time for the transaction.
+        transactionStatus:
+          type: string
+          description: Status of the transaction.
+        priceCharged:
+          type: string
+          description: Price charged for the transaction.
+        itemIndicator:
+          type: string
+          description: Indicator of the product.
+        mobileNumber:
+          type: string
+          description: Mobile number of the user.
+        email:
+          type: string
+          description: Email of the user.
+    updateTransaction:
+      type: object
+      required:
+        - apiKey
+        - Authorization
+        - paymentChannel
+        - transactionId
+        - transactionStatus
+      properties:
+        channelPartnerID:
+          type: string
+          description: Unique identification number of channel partner
+        apiKey:
+          type: string
+          description: Partner authentication key.
+        Authorization:
+          type: string
+          description: Access token generated to the account.
+        transactionId:
+          type: string
+          description: Unique id of the transaction.
+        transactionStatus:
+          type: string
+          description: Status of the transaction.
+          example: COMPLETED/FAILURE
+        mobileNumber:
+          type: string
+          description: Mobile number of the user.
+        email:
+          type: string
+          description: Email of the user.
+        paymentChannel:
+          type: string
+          description: Name of the payment channel.
+    getTransactionInfoDetails:
+      type: object
+      required:
+        - apiKey
+        - Authorization
+        - paymentChannel
+        - transactionId
+      properties:
+        channelPartnerID:
+          type: string
+          description: Unique identification number of channel partner
+        apiKey:
+          type: string
+          description: Partner authentication key.
+        Authorization:
+          type: string
+          description: Access token generated to the account.
+        transactionId:
+          type: string
+          description: Unique id of the transaction.
+        paymentChannel:
+          type: string
+          description: Name of the payment channel.
